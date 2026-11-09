@@ -6,15 +6,49 @@ public class Main{
       this.dest=dest;
     }
   }
+  // Single component Graph
   public static void bfs(ArrayList<Edge> graph[], int curr){
     Queue<Integer> q=new LinkedList<>();
     q.offer(curr);
-    boolean vis[]=new vis[graph.length];
+    boolean vis[]=new boolean[graph.length];
     while(!q.isEmpty()){
-      vis[curr]=true;
-      for(int i=0;i<graph[i].size();i++){
-        
+      int node= q.poll();
+      vis[node]=true;
+      System.out.print(node+" ");
+      for(int i=0;i<graph[node].size();i++){
+        Edge e=graph[node].get(i);
+        if(!vis[e.dest]){
+          q.offer(e.dest);
+          vis[e.dest]=true;
+        }
       }
+    }
+  }
+  //Multi Component Graph
+  public static void bfsWC(ArrayList<Edge> graph[], boolean vis[], int curr){
+    vis[curr]=true;
+    Queue<Integer> q=new LinkedList<>();
+    q.offer(curr);
+    while(!q.isEmpty()){
+      int node= q.poll();
+      System.out.print(node+" ");
+      for(int i=0;i<graph[node].size();i++){
+        Edge e=graph[node].get(i);
+          if(!vis[e.dest]){
+          q.offer(e.dest);
+          vis[e.dest]=true;
+          }
+        }
+      }
+  }
+  //Single component dfs + Disconnected graph
+  public static void dfs(ArrayList<Edge> graph[], boolean vis[] ,int curr){
+    vis[curr]=true;
+    System.out.print(curr+" ");
+    for(int i=0;i<graph[curr].size();i++){
+      Edge e=graph[curr].get(i);
+      if(!vis[e.dest])
+        dfs(graph, vis, e.dest);
     }
   }
   public static void createGraph(ArrayList<Edge> graph[]){
@@ -37,10 +71,24 @@ public class Main{
     int V= 4;
     ArrayList<Edge> graph[]=new ArrayList[V];
     for(int i=0;i<V;i++){
-      graph[i].add(new ArrayList<Edge>());
+      graph[i]=new ArrayList<Edge>();
     }
     createGraph(graph);
-    bfs(graph);
-    dfs(graph, 0);
+    //Single component call
+    bfs(graph, 0);
+    //Multi Component graph
+    boolean vis[]= new boolean[V];
+    for(int i=0;i<V;i++){
+    if(!vis[i])
+    bfsWC(graph, vis, i);
+    }
+    //Single component call
+    dfs(graph, vis ,0);
+    //disconnected graph
+    for(int i=0;i<V;i++){
+      if(!vis[i]){
+        dfs(graph, vis, i);
+      }
+    }
   }
 }
